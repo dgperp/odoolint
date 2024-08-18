@@ -1,3 +1,4 @@
+import os
 import yaml
 
 DEFAULT_CONFIG = {
@@ -8,8 +9,9 @@ DEFAULT_CONFIG = {
 }
 
 
-def load_config(config_file=None):
-    if config_file:
+def load_config():
+    config_file = '.odoolint'
+    if os.path.exists(config_file):
         with open(config_file, 'r') as f:
             return yaml.safe_load(f)
     return DEFAULT_CONFIG.copy()

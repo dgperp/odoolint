@@ -7,7 +7,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="odoolint",
-    version="1.8",
+    version="1.9",
     description="A comprehensive linting tool for Odoo modules",
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -1,6 +1,5 @@
 import sys
 import os
-import argparse
 from .python_checker import check_python_code
 from .xml_checker import check_xml_id_duplication
 from .file_checker import check_files_end_of_file_newline
@@ -9,11 +8,7 @@ from .config import load_config
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Odoolint: Odoo Code Checker")
-    parser.add_argument("--config", help="Path to configuration file")
-    args = parser.parse_args()
-
-    config = load_config(args.config)
+    config = load_config()
 
     current_directory = os.getcwd()
     modules = find_odoo_modules(current_directory)
