@@ -2,8 +2,9 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from .module_finder import find_files_in_module
 
+
 def check_xml_id_duplication(modules, config):
-    duplicates = []
+    errors = []
     target_tags = {'record', 'template', 'menuitem'}
 
     for module_name, module_path in modules.items():
@@ -21,20 +22,13 @@ def check_xml_id_duplication(modules, config):
                         xml_ids[xml_id].append((xml_file, elem.tag))
 
             except ET.ParseError as e:
-                print(f"Error parsing {xml_file}: {e}")
+                errors.append(f"Error parsing {xml_file}: {e}")
 
-        module_duplicates = [(xml_id, files) for xml_id, files in xml_ids.items() if len(files) > 1]
-        if module_duplicates:
-            duplicates.append((module_name, module_duplicates))
+        for xml_id, occurrences in xml_ids.items():
+            if len(occurrences) > 1:
+                error_msg = f"Duplicate XML ID '{xml_id}' in module '{module_name}':"
+                for file, tag in occurrences:
+                    error_msg += f"\n  {file}: <{tag}>"
+                errors.append(error_msg)
 
-    if duplicates:
-        print("\nFound duplicate XML IDs within modules:")
-        for module, module_duplicates in duplicates:
-            print(f"Module: {module}")
-            for xml_id, files in module_duplicates:
-                print(f"  XML ID: {xml_id}")
-                for file, tag in files:
-                    print(f"    - File: {file}, Tag: <{tag}>")
-            print()
-        return True
-    return False
+    return errors

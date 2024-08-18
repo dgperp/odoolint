@@ -1,3 +1,4 @@
+import sys
 import os
 import argparse
 from .python_checker import check_python_code
@@ -19,24 +20,37 @@ def main():
 
     if not modules:
         print(f"No Odoo modules found in {current_directory} and its subdirectories.")
-        return
+        return 0
 
-    files_with_errors = 0
+    print(f"Found {len(modules)} Odoo modules. Checking Python files, XML IDs, and end-of-file newlines...")
+
+    total_errors = 0
+
     for module_name, module_path in modules.items():
         python_files = find_files_in_module(module_path, ['.py'], config)
         for file_path in python_files:
-            if check_python_code(file_path, config):
-                files_with_errors += 1
+            errors = check_python_code(file_path, config)
+            total_errors += len(errors)
+            for error in errors:
+                print(error)
 
-    if check_xml_id_duplication(modules, config):
-        files_with_errors += 1
+    xml_errors = check_xml_id_duplication(modules, config)
+    total_errors += len(xml_errors)
+    for error in xml_errors:
+        print(error)
 
-    if check_files_end_of_file_newline(modules, config):
-        files_with_errors += 1
+    eol_errors = check_files_end_of_file_newline(modules, config)
+    total_errors += len(eol_errors)
+    for error in eol_errors:
+        print(error)
 
-    if files_with_errors:
-        print(f"\nFound issues in {files_with_errors} file(s) or modules.")
+    if total_errors == 0:
+        print("All files passed the checks.")
+        return 0
+    else:
+        print(f"\nFound {total_errors} issue(s).")
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

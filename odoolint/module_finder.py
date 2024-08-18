@@ -1,11 +1,13 @@
 import os
 import fnmatch
 
+
 def should_exclude(path, exclude_patterns):
     for pattern in exclude_patterns:
         if fnmatch.fnmatch(path, pattern) or any(fnmatch.fnmatch(part, pattern) for part in path.split(os.sep)):
             return True
     return False
+
 
 def find_odoo_modules(directory):
     modules = {}
@@ -14,6 +16,7 @@ def find_odoo_modules(directory):
             module_name = os.path.basename(root)
             modules[module_name] = root
     return modules
+
 
 def find_files_in_module(module_path, extensions, config):
     files = []
