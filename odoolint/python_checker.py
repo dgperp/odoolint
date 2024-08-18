@@ -1,14 +1,19 @@
-from flake8.api import legacy as flake8
+import subprocess
+import sys
 
 
 def check_python_code(file_path, config):
-    style_guide = flake8.get_style_guide(
-        select=config['flake8_select'].split(','),
-        ignore=config['flake8_ignore'].split(',')
-    )
-    report = style_guide.check_files([file_path])
+    select = config['flake8_select']
+    ignore = config['flake8_ignore']
+
+    cmd = [sys.executable, '-m', 'flake8', file_path, f'--select={select}', f'--ignore={ignore}',
+           '--format=%(path)s:%(row)d:%(col)d: %(code)s %(text)s']
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
 
     errors = []
-    for line_number, column, message, check in report._application.formatter.found_errors:
-        errors.append(f"{file_path}:{line_number}:{column}: {message}")
+    for line in result.stdout.splitlines():
+        if line.strip():
+            errors.append(line)
+
     return errors
