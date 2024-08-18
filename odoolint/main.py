@@ -21,8 +21,6 @@ def main():
         print(f"No Odoo modules found in {current_directory} and its subdirectories.")
         return
 
-    print(f"Found {len(modules)} Odoo modules. Checking Python files, XML IDs, and end-of-file newlines...")
-
     files_with_errors = 0
     for module_name, module_path in modules.items():
         python_files = find_files_in_module(module_path, ['.py'], config)
@@ -36,9 +34,7 @@ def main():
     if check_files_end_of_file_newline(modules, config):
         files_with_errors += 1
 
-    if files_with_errors == 0:
-        print("\nAll files passed the checks.")
-    else:
+    if files_with_errors:
         print(f"\nFound issues in {files_with_errors} file(s) or modules.")
 
 
