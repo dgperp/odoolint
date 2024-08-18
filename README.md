@@ -7,7 +7,6 @@ Odoolint is a comprehensive linting tool designed specifically for Odoo modules.
 - Python code style checking using Flake8
 - XML ID duplication detection within Odoo modules
 - End-of-file newline validation for various file types
-- Configurable rules and file exclusions
 
 ## Installation
 
@@ -19,33 +18,17 @@ pip install odoolint
 
 ## Usage
 
-### Command Line
-
-Run Odoolint from the command line:
+Run Odoolint from the command line in your Odoo project directory:
 
 ```
-odoolint --config path/to/config.yaml
+odoolint
 ```
 
-If no config file is specified, default settings will be used.
-
-### Python Script
-
-Use Odoolint in your Python scripts:
-
-```python
-from odoolint import find_odoo_modules, check_python_code, check_xml_id_duplication, check_files_end_of_file_newline, load_config
-
-config = load_config("path/to/config.yaml")
-modules = find_odoo_modules("/path/to/odoo/addons")
-check_python_code("/path/to/python/file.py", config)
-check_xml_id_duplication(modules, config)
-check_files_end_of_file_newline(modules, config)
-```
+Odoolint will automatically look for a `.odoolint` configuration file in the current directory. If no configuration file is found, default settings will be used.
 
 ## Configuration
 
-Create a YAML configuration file to customize Odoolint's behavior:
+Create a `.odoolint` file in YAML format in your project's root directory to customize Odoolint's behavior. Here's an example configuration:
 
 ```yaml
 flake8_select: "C,E,F,W,B,B9,N801,N803"
@@ -54,14 +37,20 @@ flake8_exclude:
   - "**unported**"
   - "**__init__.py"
   - "tests"
-  - "toa_account_report"
-  - "toa_server_wide_multi_addons_path"
 check_file_types:
   - ".xml"
   - ".js"
   - ".css"
   - ".scss"
+  - ".csv"
 ```
+
+### Configuration Options
+
+- `flake8_select`: Comma-separated list of error codes to check for in Python files.
+- `flake8_ignore`: Comma-separated list of error codes to ignore in Python files.
+- `flake8_exclude`: List of file or directory patterns to exclude from checks.
+- `check_file_types`: List of file extensions to check for end-of-file newlines.
 
 ## Contributing
 
