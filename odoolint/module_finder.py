@@ -29,18 +29,27 @@ def find_files_in_module(module_path, extensions, config):
                     files.append(file_path)
     return files
 
+
 def find_modified_modules(directory, branch):
-    # Get the list of modified files
-    cmd = ['git', 'diff', '--name-only', f'origin/{branch}...HEAD']
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=directory)
+    # Get the list of modified files that are committed
+    cmd_committed = ['git', 'diff', '--name-only', f'origin/{branch}...HEAD']
+    result_committed = subprocess.run(cmd_committed, capture_output=True, text=True, cwd=directory)
+    modified_files_committed = result_committed.stdout.splitlines()
 
-    modified_files = result.stdout.splitlines()
+    # Get the list of modified files that are not committed
+    cmd_uncommitted = ['git', 'ls-files', '--modified', '--others', '--exclude-standard']
+    result_uncommitted = subprocess.run(cmd_uncommitted, capture_output=True, text=True, cwd=directory)
+    modified_files_uncommitted = result_uncommitted.stdout.splitlines()
+
+    # Combine both lists
+    all_modified_files = set(modified_files_committed + modified_files_uncommitted)
+
     modules = {}
-    for file_path in modified_files:
-
+    for file_path in all_modified_files:
         parts = file_path.split(os.sep)
         if len(parts) > 1:
             module_name = f'{parts[0]}/{parts[1]}'
             if module_name not in modules:
                 modules[module_name] = os.path.join(directory, module_name)
+
     return modules
