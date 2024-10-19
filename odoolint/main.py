@@ -11,6 +11,7 @@ from .config import load_config
 def main():
     parser = argparse.ArgumentParser(description='Odoo Linter')
     parser.add_argument('--branch', help='Specify the branch to compare against')
+    parser.add_argument('--head', default='HEAD', help='Specify the HEAD to compare with (default: HEAD)')
     args = parser.parse_args()
 
     config = load_config()
@@ -19,7 +20,7 @@ def main():
 
     if args.branch:
         print(f"Checking modules modified in comparison to branch: {args.branch}")
-        modules = find_modified_modules(current_directory, args.branch)
+        modules = find_modified_modules(current_directory, args.branch, args.head)
     else:
         modules = find_odoo_modules(current_directory)
 

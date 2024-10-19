@@ -30,9 +30,9 @@ def find_files_in_module(module_path, extensions, config):
     return files
 
 
-def find_modified_modules(directory, branch):
+def find_modified_modules(directory, branch, head='HEAD'):
     # Get the list of modified files that are committed
-    cmd_committed = ['git', 'diff', '--name-only', f'origin/{branch}...HEAD']
+    cmd_committed = ['git', 'diff', '--name-only', f'origin/{branch}...{head}']
     result_committed = subprocess.run(cmd_committed, capture_output=True, text=True, cwd=directory)
     modified_files_committed = result_committed.stdout.splitlines()
 
