@@ -1,5 +1,6 @@
 import os
 import fnmatch
+import subprocess
 
 
 def should_exclude(path, exclude_patterns):
@@ -27,3 +28,19 @@ def find_files_in_module(module_path, extensions, config):
                 if not should_exclude(file_path, config['flake8_exclude']):
                     files.append(file_path)
     return files
+
+def find_modified_modules(directory, branch):
+    # Get the list of modified files
+    cmd = ['git', 'diff', '--name-only', f'origin/{branch}...HEAD']
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=directory)
+
+    modified_files = result.stdout.splitlines()
+    modules = {}
+    for file_path in modified_files:
+
+        parts = file_path.split(os.sep)
+        if len(parts) > 1:
+            module_name = f'{parts[0]}/{parts[1]}'
+            if module_name not in modules:
+                modules[module_name] = os.path.join(directory, module_name)
+    return modules

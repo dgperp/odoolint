@@ -1,23 +1,35 @@
 import sys
 import os
+import argparse
 from .python_checker import check_python_code
 from .xml_checker import check_xml_id_duplication
 from .file_checker import check_files_end_of_file_newline
-from .module_finder import find_odoo_modules, find_files_in_module
+from .module_finder import find_odoo_modules, find_files_in_module, find_modified_modules
 from .config import load_config
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Odoo Linter')
+    parser.add_argument('--branch', help='Specify the branch to compare against')
+    args = parser.parse_args()
+
     config = load_config()
 
     current_directory = os.getcwd()
-    modules = find_odoo_modules(current_directory)
+
+    if args.branch:
+        print(f"Checking modules modified in comparison to branch: {args.branch}")
+        modules = find_modified_modules(current_directory, args.branch)
+    else:
+        modules = find_odoo_modules(current_directory)
 
     if not modules:
-        print(f"No Odoo modules found in {current_directory} and its subdirectories.")
+        print(
+            f"No {'modified ' if args.branch else ''}Odoo modules found in {current_directory} and its subdirectories.")
         return 0
 
-    print(f"Found {len(modules)} Odoo modules. Checking Python files, XML IDs, and end-of-file newlines...")
+    print(
+        f"Found {len(modules)} {'modified ' if args.branch else ''}Odoo modules. Checking Python files, XML IDs, and end-of-file newlines...")
 
     total_errors = 0
 
